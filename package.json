@@ -1,0 +1,13 @@
+{
+  "name": "nexus-apps",
+  "private": true,
+  "type": "module",
+  "description": "Applications Android de My shop, CV en ligne et Devizo (Trusted Web Activity).",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/check.mjs"
+  },
+  "dependencies": {
+    "@bubblewrap/core": "1.25.0"
+  }
+}

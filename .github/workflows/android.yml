@@ -1,0 +1,65 @@
+# Construit les applications Android (My shop, CV en ligne, Devizo) et les publie (page « Releases ») avec des liens fixes :
+#   https://github.com/elhadjidiagne002-netizen/nexus-apps/releases/latest/download/<app>.apk
+# Secrets requis pour publier (Settings → Secrets and variables → Actions) :
+#   ANDROID_KEYSTORE_BASE64   la clé de signature (fichier .keystore encodé en base64)
+#   ANDROID_KEYSTORE_PASSWORD son mot de passe
+# Sans ces secrets, les APK sont construits avec une clé d'essai et seulement joints au run (rien n'est publié).
+name: Applications Android
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android
+  cancel-in-progress: false
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      HAS_KEY: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' && secrets.ANDROID_KEYSTORE_PASSWORD != '' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Dépendances
+        run: npm ci
+
+      - name: Construire et signer les APK
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: node scripts/build.mjs
+
+      - name: Joindre les APK au run
+        uses: actions/upload-artifact@v4
+        with:
+          name: apk-${{ github.run_number }}
+          path: dist/
+          retention-days: 14
+
+      - name: Publier la version (liens de téléchargement des sites)
+        if: env.HAS_KEY == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="v1.0.${{ github.run_number }}"
+          gh release create "$TAG" dist/*.apk dist/versions.json \
+            --title "Applications Android $TAG" \
+            --notes "My shop, CV en ligne et Devizo pour Android (version $TAG). Téléchargez l'APK de votre application ci-dessous." \
+            --latest

@@ -1,0 +1,69 @@
+[
+  {
+    "id": "myshop",
+    "packageId": "sn.nexusmarket.myshop",
+    "name": "My shop — stock et caisse",
+    "launcherName": "My shop",
+    "host": "myshop.nexusmarket.sn",
+    "startUrl": "/#/",
+    "themeColor": "#0f7a4a",
+    "backgroundColor": "#eef1ee",
+    "iconUrl": "https://myshop.nexusmarket.sn/icons/icon-512.png",
+    "maskableIconUrl": "https://myshop.nexusmarket.sn/icons/icon-512.png",
+    "webManifestUrl": "https://myshop.nexusmarket.sn/manifest.webmanifest",
+    "orientation": "portrait",
+    "shortcuts": [
+      {
+        "name": "Scanner",
+        "shortName": "Scanner",
+        "url": "/#/scanner"
+      },
+      {
+        "name": "Caisse",
+        "shortName": "Caisse",
+        "url": "/#/caisse"
+      },
+      {
+        "name": "À commander",
+        "shortName": "Commander",
+        "url": "/#/commander"
+      }
+    ]
+  },
+  {
+    "id": "cv-en-ligne",
+    "packageId": "sn.nexusmarket.cv",
+    "name": "CV en ligne",
+    "launcherName": "CV en ligne",
+    "host": "cv.nexusmarket.sn",
+    "startUrl": "/app",
+    "themeColor": "#0b5cad",
+    "backgroundColor": "#ffffff",
+    "iconUrl": "https://cv.nexusmarket.sn/icons/icon-512.png",
+    "maskableIconUrl": "https://cv.nexusmarket.sn/icons/icon-512.png",
+    "webManifestUrl": "https://cv.nexusmarket.sn/manifest.webmanifest",
+    "orientation": "default",
+    "shortcuts": []
+  },
+  {
+    "id": "devizo",
+    "packageId": "sn.nexusmarket.devizo",
+    "name": "Devizo — devis et factures",
+    "launcherName": "Devizo",
+    "host": "devis.nexusmarket.sn",
+    "startUrl": "/app#dashboard",
+    "themeColor": "#111827",
+    "backgroundColor": "#f3f4f6",
+    "iconUrl": "https://devis.nexusmarket.sn/icons/icon-512.png",
+    "maskableIconUrl": "https://devis.nexusmarket.sn/icons/icon-maskable-512.png",
+    "webManifestUrl": "https://devis.nexusmarket.sn/manifest.webmanifest",
+    "orientation": "default",
+    "shortcuts": [
+      {
+        "name": "Nouveau devis",
+        "shortName": "Devis",
+        "url": "/app#quotes=new"
+      }
+    ]
+  }
+]

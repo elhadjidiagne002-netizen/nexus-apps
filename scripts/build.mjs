@@ -71,8 +71,24 @@ function buildTools() {
 function signingKey(work) {
   const path = join(work, 'signing.keystore');
   if (process.env.ANDROID_KEYSTORE_BASE64 && process.env.ANDROID_KEYSTORE_PASSWORD) {
-    writeFileSync(path, Buffer.from(process.env.ANDROID_KEYSTORE_BASE64, 'base64'));
-    return { path, password: process.env.ANDROID_KEYSTORE_PASSWORD, official: true };
+    // Tolère les espaces, retours à la ligne et guillemets laissés par un copier-coller.
+    const text = process.env.ANDROID_KEYSTORE_BASE64.replace(/\s+/g, '').replace(/^["']|["']$/g, '');
+    const password = process.env.ANDROID_KEYSTORE_PASSWORD.trim();
+    const bytes = Buffer.from(text, 'base64');
+    // Une clé PKCS12 commence par une séquence DER (octet 0x30) et pèse quelques Ko.
+    if (!/^[A-Za-z0-9+/]+=*$/.test(text) || bytes[0] !== 0x30 || bytes.length < 1000) {
+      throw new Error(`Le secret ANDROID_KEYSTORE_BASE64 ne contient pas la clé attendue : ${text.length} caractères `
+        + `(attendu : environ 3 552, tout le contenu du fichier nexus-apps.keystore.base64), ${bytes.length} octets une fois décodé `
+        + `(attendu : 2 662). Recopiez le contenu du fichier .base64 (pas le fichier .keystore ni le mot de passe).`);
+    }
+    writeFileSync(path, bytes);
+    try {
+      const out = execFileSync('keytool', ['-list', '-v', '-keystore', path, '-storepass', password, '-alias', 'nexus'], { encoding: 'utf8' });
+      console.log('Clé de signature : ' + (out.match(/SHA256:\s*([0-9A-F:]+)/) || [])[1]);
+    } catch {
+      throw new Error('Le mot de passe du secret ANDROID_KEYSTORE_PASSWORD ne correspond pas à la clé (contenu de mot-de-passe.txt attendu).');
+    }
+    return { path, password, official: true };
   }
   const password = 'essai-non-publiable';
   if (!existsSync(path)) {
